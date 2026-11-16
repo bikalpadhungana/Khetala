@@ -54,12 +54,22 @@ export default function LoginClient({ variant = 'affiliate' }) {
   // This handles the case where a logged-in user navigates to /login
   // (e.g., via back button). The middleware also handles this, but this
   // is a client-side safety net for SPA navigations.
+  // Where a signed-in user should land, or null if this login page doesn't
+  // accept their role. Superadmins are always sent to the admin dashboard,
+  // even when they sign in through the affiliate login at /login.
+  const destinationFor = (u) => {
+    if (!u) return null;
+    if (u.role === config.role) return searchParams.get('redirect') || config.defaultRedirect;
+    if (u.role === VARIANTS.admin.role) return VARIANTS.admin.defaultRedirect;
+    return null;
+  };
+  const currentDestination = destinationFor(user);
+
   useEffect(() => {
-    if (!loading && user && user.role === config.role) {
-      const redirect = searchParams.get('redirect') || config.defaultRedirect;
-      router.replace(redirect);
+    if (!loading && currentDestination) {
+      router.replace(currentDestination);
     }
-  }, [user, loading, router, searchParams, config]);
+  }, [loading, currentDestination, router]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -70,18 +80,18 @@ export default function LoginClient({ variant = 'affiliate' }) {
     setSubmitting(false);
 
     if (result.success) {
-      const user = result.user;
-      if (user.role !== config.role) {
+      const destination = destinationFor(result.user);
+      if (!destination) {
         const errorMsg = config.deniedMessage;
         setError(errorMsg);
         toast.error(errorMsg);
         logout();
         return;
       }
-      toast.success(config.welcome);
-      // Redirect to the originally intended page, or dashboard
-      const redirect = searchParams.get('redirect') || config.defaultRedirect;
-      router.replace(redirect);
+      const isAdmin = result.user.role === VARIANTS.admin.role;
+      toast.success(isAdmin ? VARIANTS.admin.welcome : config.welcome);
+      // Redirect to the originally intended page, or the role's dashboard
+      router.replace(destination);
     } else {
       setError(result.message);
       toast.error(result.message || 'Invalid credentials or login failure.');
@@ -98,7 +108,7 @@ export default function LoginClient({ variant = 'affiliate' }) {
   }
 
   // If already authenticated, show spinner while redirect happens
-  if (user && user.role === config.role) {
+  if (currentDestination) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="w-8 h-8 border-4 border-accent border-t-transparent rounded-full animate-spin" />

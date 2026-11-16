@@ -1,0 +1,109 @@
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-foreground); }
+
+/* Enforce strict horizontal bounds */
+html, body {
+  max-width: 100vw;
+  overflow-x: hidden !important;
+  width: 100%;
+  position: relative;
+}
+
+/* Hide Next.js dev indicators that cause layout shifts on mobile */
+nextjs-portal, 
+#nextjs-build-indicator,
+[data-nextjs-toast] {
+  display: none !important;
+}
+
+/* Focus accessible */
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Smooth interactions */
+a, button, input, select, textarea {
+  transition: all var(--transition-base);
+}
+
+/* Disable transitions on load */
+.preload * { transition: none !important; }
+
+/* Card lift */
+.card-interactive {
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-elevated);
+}
+
+/* Table row */
+.table-row-interactive { transition: background-color var(--transition-fast); }
+.table-row-interactive:hover { background-color: var(--secondary); }
+
+/* ─── Mobile Utilities ───────────────────────────────────────── */
+
+/* Hide scrollbar while keeping scrollability */
+.hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Touch targets — minimum 44×44px for accessibility */
+.touch-target { min-width: 44px; min-height: 44px; }
+
+/* Prevent body scroll when mobile overlay is open */
+body.mobile-menu-open { overflow: hidden; }
+
+/* Safe area padding for iPhone notch / home indicator */
+.safe-bottom { padding-bottom: env(safe-area-inset-bottom); }
+.safe-top    { padding-top:    env(safe-area-inset-top); }
+
+/* Bottom nav bar safe area */
+.bottom-nav-safe {
+  padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+}
+
+/* Horizontal scroll fade indicator */
+.scroll-fade-right {
+  -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
+  mask-image: linear-gradient(to right, black 85%, transparent 100%);
+}
+
+/* Slide-up animation for mobile panels */
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-slide-up { animation: slideUp 0.25s ease-out forwards; }
+
+/* Mobile font-size base reduction on very small phones */
+@media (max-width: 360px) {
+  html { font-size: 14.5px; }
+}
+
+/* ─── Animations ─────────────────────────────────────────────── */
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+.animate-slide-in { animation: slideInLeft 0.3s ease-out forwards; }
+
+@keyframes subtlePulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.7; }
+}
+.animate-subtle-pulse { animation: subtlePulse 2s ease-in-out infinite; }
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.animate-count-up { animation: countUp 0.6s ease-out forwards; }

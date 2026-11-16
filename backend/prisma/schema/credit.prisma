@@ -1,0 +1,24 @@
+model CreditTransaction {
+  id                    String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId                String          @map("user_id") @db.ObjectId
+  referralId            String          @map("referral_id") @db.ObjectId
+  type                  TransactionType
+  amount                Int
+  description           String?
+  balanceAfterAvailable Int?            @map("balance_after_available")
+  balanceAfterEscrow    Int?            @map("balance_after_escrow")
+  createdAt             DateTime        @default(now()) @map("created_at")
+  updatedAt             DateTime        @default(now()) @updatedAt @map("updated_at")
+  referral              Referral        @relation(fields: [referralId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  user                  User            @relation(fields: [userId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([userId, createdAt], map: "idx_ct_user_created")
+  @@index([referralId, type], map: "idx_ct_referral_type")
+  @@map("credit_transactions")
+}
+
+enum TransactionType {
+  escrow
+  release
+  cancel
+}

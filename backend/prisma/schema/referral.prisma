@@ -1,0 +1,67 @@
+model Referral {
+  id              String                  @id @default(auto()) @map("_id") @db.ObjectId
+  submittedBy     String                  @map("submitted_by") @db.ObjectId
+  assignedTo      String?                 @map("assigned_to") @db.ObjectId
+  name            String
+  email           String?
+  phone           String
+  address         String?
+  description     String
+  sectorId        String                  @map("sector_id") @db.ObjectId
+  status          ReferralStatus          @default(pending)
+  totalCredits    Int                     @map("total_credits")
+  creditStatus    CreditStatus            @default(escrow) @map("credit_status")
+  adminNotes      String?                 @map("admin_notes")
+  assignedAt      DateTime?               @map("assigned_at")
+  convertedAt     DateTime?               @map("converted_at")
+  rejectedAt      DateTime?               @map("rejected_at")
+  createdAt       DateTime                @default(now()) @map("created_at")
+  updatedAt       DateTime                @default(now()) @updatedAt @map("updated_at")
+  transactions    CreditTransaction[]
+  statusHistories ReferralStatusHistory[]
+  assignee        Business?               @relation(fields: [assignedTo], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sector          Sector                  @relation(fields: [sectorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  submitter       User                    @relation("ReferralSubmitter", fields: [submittedBy], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([submittedBy], map: "idx_referrals_submitted_by")
+  @@index([assignedTo], map: "idx_referrals_assigned_to")
+  @@index([sectorId], map: "idx_referrals_sector")
+  @@index([status], map: "idx_referrals_status")
+  @@index([submittedBy, status], map: "idx_referrals_submitted_status")
+  @@index([assignedTo, status], map: "idx_referrals_assigned_status")
+  @@index([createdAt], map: "idx_referrals_created")
+  @@map("referrals")
+}
+
+model ReferralStatusHistory {
+  id             String         @id @default(auto()) @map("_id") @db.ObjectId
+  referralId     String         @map("referral_id") @db.ObjectId
+  status         ReferralStatus
+  changedBy      String         @map("changed_by") @db.ObjectId
+  changedByModel ChangedByModel @map("changed_by_model")
+  note           String?
+  changedAt      DateTime       @default(now()) @map("changed_at")
+  referral       Referral       @relation(fields: [referralId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([referralId], map: "idx_rsh_referral")
+  @@map("referral_status_history")
+}
+
+enum ReferralStatus {
+  pending
+  assigned
+  contacted
+  converted
+  rejected
+}
+
+enum CreditStatus {
+  escrow
+  released
+  cancelled
+}
+
+enum ChangedByModel {
+  User
+  Business
+}

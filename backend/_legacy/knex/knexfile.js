@@ -1,0 +1,48 @@
+/**
+ * Knex Configuration
+ * ─────────────────────────────────────────────────────────────
+ * Used by the Knex CLI for migrations and seeds.
+ * Connection uses DATABASE_URL from environment.
+ */
+
+require('dotenv').config();
+
+module.exports = {
+  development: {
+    client: 'pg',
+    connection: {
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+    },
+    pool: {
+      min: 0,
+      max: 5,
+    },
+    migrations: {
+      directory: './migrations',
+      tableName: 'knex_migrations',
+    },
+    seeds: {
+      directory: './seeds',
+    },
+  },
+
+  production: {
+    client: 'pg',
+    connection: {
+      connectionString: process.env.DATABASE_URL,
+      ssl: { rejectUnauthorized: false },
+    },
+    pool: {
+      min: 2,
+      max: 10,
+    },
+    migrations: {
+      directory: './migrations',
+      tableName: 'knex_migrations',
+    },
+    seeds: {
+      directory: './seeds',
+    },
+  },
+};

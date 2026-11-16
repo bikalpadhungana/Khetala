@@ -1,0 +1,30 @@
+model Business {
+  id                       String     @id @default(auto()) @map("_id") @db.ObjectId
+  name                     String
+  email                    String     @unique(map: "businesses_email_unique")
+  password                 String
+  phone                    String?
+  address                  String?
+  sectorId                 String?    @map("sector_id") @db.ObjectId
+  contactPersonName        String?    @map("contact_person_name")
+  contactPersonPhone       String?    @map("contact_person_phone")
+  contactPersonEmail       String?    @map("contact_person_email")
+  contactPersonDesignation String?    @map("contact_person_designation")
+  subService               String?    @map("sub_service")
+  website                  String?
+  description              String?
+  isActive                 Boolean    @default(true) @map("is_active")
+  createdBy                String?    @map("created_by") @db.ObjectId
+  lastLoginAt              DateTime?  @map("last_login_at")
+  createdAt                DateTime   @default(now()) @map("created_at")
+  updatedAt                DateTime   @default(now()) @updatedAt @map("updated_at")
+  resetOtp                 String?    @map("reset_otp")
+  resetOtpExpiry           DateTime?  @map("reset_otp_expiry")
+  creator                  User?      @relation("BusinessCreator", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  sector                   Sector?    @relation(fields: [sectorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  referrals                Referral[]
+
+  @@index([name], map: "idx_businesses_name")
+  @@index([isActive], map: "idx_businesses_active")
+  @@map("businesses")
+}

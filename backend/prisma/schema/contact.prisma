@@ -1,0 +1,18 @@
+model ContactInquiry {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  organization String?
+  email        String
+  phone        String
+  inquiryType  String   @map("inquiry_type")
+  leadSector   String?  @map("lead_sector")
+  message      String
+  status       String   @default("pending")
+  adminNotes   String?  @map("admin_notes")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@index([createdAt], map: "idx_contact_inquiries_created_at")
+  @@index([status], map: "idx_contact_inquiries_status")
+  @@map("contact_inquiries")
+}

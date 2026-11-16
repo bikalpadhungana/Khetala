@@ -1,0 +1,32 @@
+model JobPosting {
+  id           String           @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  department   String
+  type         String           @default("Full-time") // Full-time, Part-time, Freelance, Contract
+  location     String           @default("Remote")
+  description  String
+  requirements String
+  status       String           @default("Active") // Active, Closed, Draft
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  applications JobApplication[]
+
+  @@map("job_postings")
+}
+
+model JobApplication {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  jobId       String     @db.ObjectId
+  job         JobPosting @relation(fields: [jobId], references: [id])
+  fullName    String
+  email       String
+  phone       String
+  resumeUrl   String?
+  coverLetter String?
+  linkedinUrl String?
+  status      String     @default("Pending") // Pending, Reviewed, Interview, Rejected, Hired
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@map("job_applications")
+}

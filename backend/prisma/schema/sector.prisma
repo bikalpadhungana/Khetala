@@ -1,0 +1,15 @@
+model Sector {
+  id          String     @id @default(auto()) @map("_id") @db.ObjectId
+  name        String     @unique(map: "sectors_name_unique")
+  description String?
+  isActive    Boolean    @default(true) @map("is_active")
+  createdBy   String?    @map("created_by") @db.ObjectId
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @default(now()) @updatedAt @map("updated_at")
+  businesses  Business[]
+  referrals   Referral[]
+  creator     User?      @relation("SectorCreator", fields: [createdBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([isActive], map: "idx_sectors_active")
+  @@map("sectors")
+}

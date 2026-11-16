@@ -1,0 +1,42 @@
+model User {
+  id                String              @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  email             String              @unique(map: "users_email_unique")
+  password          String
+  phone             String?
+  role              UserRole            @default(affiliate)
+  status            UserStatus          @default(pending)
+  availableCredits  Int                 @default(0) @map("available_credits")
+  escrowCredits     Int                 @default(0) @map("escrow_credits")
+  address           String?
+  rejectionReason   String?             @map("rejection_reason")
+  approvedAt        DateTime?           @map("approved_at")
+  approvedBy        String?             @map("approved_by") @db.ObjectId
+  lastLoginAt       DateTime?           @map("last_login_at")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @default(now()) @updatedAt @map("updated_at")
+  resetOtp          String?             @map("reset_otp")
+  resetOtpExpiry    DateTime?           @map("reset_otp_expiry")
+  createdBusinesses Business[]          @relation("BusinessCreator")
+  transactions      CreditTransaction[]
+  notifications     Notification[]
+  referrals         Referral[]          @relation("ReferralSubmitter")
+  createdSectors    Sector[]            @relation("SectorCreator")
+  supportTickets    SupportTicket[]
+  approver          User?               @relation("UserApprovals", fields: [approvedBy], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  approvedUsers     User[]              @relation("UserApprovals")
+
+  @@index([role, status], map: "idx_users_role_status")
+  @@map("users")
+}
+
+enum UserRole {
+  superadmin
+  affiliate
+}
+
+enum UserStatus {
+  pending
+  approved
+  rejected
+}

@@ -22,6 +22,7 @@ app.use(
       "https://www.ttfreelancinghub.com",
       "http://localhost:3000",
       "http://localhost:3001",
+      "http://localhost:3006",
       "https://admin.ttfreelancinghub.com"
     ],
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],

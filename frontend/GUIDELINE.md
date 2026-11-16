@@ -1079,7 +1079,7 @@ cp .env.example .env
 npm run dev
 
 # 5. Open browser
-# → http://localhost:3000
+# → http://localhost:3006
 ```
 
 ### Available Scripts

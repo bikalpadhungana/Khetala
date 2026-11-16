@@ -19,7 +19,7 @@ import {
   LuChevronLeft,
   LuChevronRight,
   LuGlobe,
-
+  LuUsers,
 } from 'react-icons/lu';
 
 import * as Dialog from '@radix-ui/react-dialog';
@@ -37,6 +37,7 @@ const iconMap = {
   LuBell,
   LuUser,
   LuHeadphones,
+  LuUsers,
 };
 
 const affiliateLinks = [
@@ -49,10 +50,21 @@ const affiliateLinks = [
   { label: 'Support',      href: '/affiliate/support',      icon: 'LuHeadphones' },
 ];
 
-// Bottom nav shows these 4 + "More" button
-const BOTTOM_NAV_ITEMS = ['Dashboard', 'Submit Lead', 'My Leads', 'Commission'];
+const adminLinks = [
+  { label: 'Dashboard',  href: '/admin/dashboard',  icon: 'LuLayoutDashboard' },
+  { label: 'Affiliates', href: '/admin/affiliates', icon: 'LuUsers' },
+  { label: 'Leads',      href: '/admin/leads',      icon: 'LuFileText' },
+];
 
-export default function Sidebar() {
+// Bottom nav (mobile) shows these + a "More" button
+const BOTTOM_NAV_ITEMS = {
+  affiliate: ['Dashboard', 'Submit Lead', 'My Leads', 'Commission'],
+  admin: ['Dashboard', 'Affiliates', 'Leads'],
+};
+
+export default function Sidebar({ variant = 'affiliate' }) {
+  const isAdmin = variant === 'admin';
+  const bottomNavItems = BOTTOM_NAV_ITEMS[isAdmin ? 'admin' : 'affiliate'];
   const pathname = usePathname();
   const { user, logout } = useAuth();
 
@@ -74,11 +86,12 @@ export default function Sidebar() {
     queryKey: ['notifications-unread-count'],
     queryFn: () => api.get('/notifications'),
     refetchInterval: 15000,
+    enabled: !isAdmin,
   });
 
   const unreadCount = notificationsData?.data?.unreadCount || 0;
 
-  const navLinks = affiliateLinks.map((link) => {
+  const navLinks = (isAdmin ? adminLinks : affiliateLinks).map((link) => {
     if (link.label === 'Notifications') {
       return { ...link, badge: unreadCount > 0 ? unreadCount : undefined };
     }
@@ -98,7 +111,7 @@ export default function Sidebar() {
         {!collapsed && (
           <div className="flex flex-col min-w-0">
             <span className="text-sm font-bold text-white truncate">Think Tank</span>
-            <span className="text-[0.6rem] uppercase tracking-[0.15em] text-sidebar-muted">Affiliate Hub</span>
+            <span className="text-[0.6rem] uppercase tracking-[0.15em] text-sidebar-muted">{isAdmin ? 'Admin Console' : 'Affiliate Hub'}</span>
           </div>
         )}
       </div>
@@ -204,7 +217,7 @@ export default function Sidebar() {
 
       {/* ── Mobile Bottom Navigation Bar ─────────────────────────── */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-navy-900 border-t border-navy-700 flex items-stretch bottom-nav-safe">
-        {BOTTOM_NAV_ITEMS.map((label) => {
+        {bottomNavItems.map((label) => {
           const link = navLinks.find((l) => l.label === label);
           if (!link) return null;
           const Icon = iconMap[link.icon];
@@ -273,7 +286,7 @@ export default function Sidebar() {
             {/* Remaining nav links */}
             <div className="px-4 py-3 space-y-1">
               {navLinks
-                .filter((l) => !BOTTOM_NAV_ITEMS.includes(l.label))
+                .filter((l) => !bottomNavItems.includes(l.label))
                 .map((link) => {
                   const Icon = iconMap[link.icon];
                   const active = isActive(link.href);
@@ -348,7 +361,7 @@ export default function Sidebar() {
               <div className="flex-1">
                 <Dialog.Title className="text-lg font-semibold text-white">Confirm Logout</Dialog.Title>
                 <Dialog.Description className="mt-2 text-sm leading-relaxed text-slate-400">
-                  You are about to securely sign out of your Think Tank Affiliate Hub account.
+                  You are about to securely sign out of your Think Tank {isAdmin ? 'admin' : 'Affiliate Hub'} account.
                 </Dialog.Description>
               </div>
             </div>

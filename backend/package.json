@@ -1,7 +1,7 @@
 {
-  "name": "affiliate-referral-platform",
+  "name": "khetala",
   "version": "1.0.0",
-  "description": "Affiliate Partner Referral Platform — Backend API",
+  "description": "Khetala — Backend API",
   "main": "src/server.js",
   "scripts": {
     "start": "node src/server.js",
